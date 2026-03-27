@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  samba:
+    image: dperson/samba
+    ports:
+      - "139:139"
+      - "445:445"
+    command: -u "user;your_password_here" -s "share;/mount;yes;no;no;user"
+    volumes:
+      - samba_data:/mount
+    healthcheck:
+      test: ["CMD", "nc", "-z", "localhost", "445"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  app:
+    build: .
+    ports:
+      - "3000:3000"
+    depends_on:
+      - samba
+    environment:
+      - SMB_HOST=samba
+      - SMB_PORT=445
+      - SMB_SHARE=share
+      - SMB_USERNAME=user
+      - SMB_PASSWORD=your_password_here
+
+volumes:
+  samba_data:
