@@ -11,7 +11,6 @@ export async function POST(req: NextRequest) {
     if (!path) {
        return NextResponse.json({ error: 'Path is required' }, { status: 400 });
     }
-
     const sanitizedPath = path.replace(/\.\./g, '').replace(/\//g, '\\');
 
     if (!req.body) {
